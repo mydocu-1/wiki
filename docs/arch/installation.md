@@ -126,3 +126,4 @@ options cryptdevice=UUID=<UUID>:vg0 root=/dev/mapper/vg0-root resume=/dev/mapper
 # swapoff -a
 # reboot
 ```
+

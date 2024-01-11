@@ -11,3 +11,4 @@
 * `-Ql <name>` list files of the installed package
 * `-Qk <name>` verify files presence
 * `-Qdt` list orphan packages
+

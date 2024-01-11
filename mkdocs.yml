@@ -1,0 +1,7 @@
+site_name: C:\MYDOCU~1\wiki
+site_url: https://mydocu~1.github.io
+theme: readthedocs
+nav:
+  - Arch :  arch/index.md
+  - Vim : vim/index.md
+

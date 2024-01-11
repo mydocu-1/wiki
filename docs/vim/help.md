@@ -1,4 +1,4 @@
-# Vim
+# Vim/Help
 
 ## Help
 
@@ -8,3 +8,4 @@
 
 `Ctrl-]` - follow link under cursor
 `Ctrl-O` - go back
+

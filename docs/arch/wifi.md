@@ -21,3 +21,4 @@
 ```
 # wpa_passphrase MYSSID passphrase >> /etc/wpa_supplicant/example.conf
 ```
+

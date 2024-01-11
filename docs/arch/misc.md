@@ -6,3 +6,4 @@
 # uname -a
 # pacman -Q linux
 ```
+

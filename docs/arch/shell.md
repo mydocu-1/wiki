@@ -19,3 +19,4 @@ in `tmux.conf`:
 ```
 # set-option -g default-shell "/usr/bin/fish"
 ```
+

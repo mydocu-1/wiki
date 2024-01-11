@@ -46,3 +46,4 @@
 * `<Mod>-$` -- rename session
 * `<Mod>-S` -- select session
 * `<Mod>-D` -- detach current session
+

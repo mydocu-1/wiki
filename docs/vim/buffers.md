@@ -1,5 +1,3 @@
-# Vim
-
 ## Buffers
 
 Buffer = File
@@ -28,3 +26,4 @@ Window = Viewport
 `Ctrl-W-<hjkl>` - navigate windows
 
 `:q` - closes current window
+

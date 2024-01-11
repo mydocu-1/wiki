@@ -8,5 +8,6 @@
    *  [Macros](macros.md)
    *  [Buffers](buffers.md)
    *  [Help](help.md)
-*  Tricks 
-   *  [Comment multiple lines](comment_multiple_lines.md)
+*  Tricks
+   *  [Comment multiple lines](tricks/comment_multiple_lines.md)
+

@@ -19,3 +19,4 @@ Add entry to `/etc/fstab` file:
 ```
 # free -m
 ```
+

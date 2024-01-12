@@ -1,6 +1,7 @@
 site_name: C:\MYDOCU~1\wiki
 site_url: https://mydocu-1.github.io
 repo_url: https://github.com/mydocu-1/wiki/
+edit_uri: edit/main/docs/
 theme: readthedocs
 nav:
   - Arch :  arch/index.md

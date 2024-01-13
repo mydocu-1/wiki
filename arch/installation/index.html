@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://mydocu-1.github.io/arch/installation/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Arch installation on thinkPad X1 Carbon 5th gen - C:\MYDOCU~1\wiki</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Arch installation on thinkPad X1 Carbon 5th gen";
+        var mkdocs_page_input_path = "arch/installation.md";
+        var mkdocs_page_url = "/arch/installation/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> C:\MYDOCU~1\wiki
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../">Arch</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../vim/">Vim</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">C:\MYDOCU~1\wiki</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Arch installation on thinkPad X1 Carbon 5th gen</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mydocu-1/wiki/edit/main/docs/arch/installation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arch-installation-on-thinkpad-x1-carbon-5th-gen">Arch installation on thinkPad X1 Carbon 5th gen</h1>
+<p><strong>F1</strong> to enter BIOS:  disable secure boot<br>
+<strong>F12</strong> to select USB as boot device</p>
+<pre><code># lspci -k
+</code></pre>
+<h2 id="setup-wifi-connection">Setup wifi connection</h2>
+<pre><code># ip link set interface up
+# wpa_supplicant -B -i interface -c &lt;(wpa_passphrase MYSSID passphrase)
+# dhcpd interface
+# ping archlinux.org
+</code></pre>
+<pre><code># timedatectl set-ntp true
+</code></pre>
+<h2 id="partition-hard-drive">Partition hard drive</h2>
+<pre><code># gdisk
+</code></pre>
+<p>260 MB for EF00 type of partition<br>
+one partition for the rest</p>
+<h2 id="luks-and-lvm-setup">Luks and LVM setup</h2>
+<pre><code># cryptsetup --key-size 512 --hash sha512 -y --use-random luksFormat /dev/nvme0n1p2
+# cryptsetup luksOpen /dev/nvme0n1p2 luks
+# pvcreate /dev/mapper/luks
+# vgcreate vg0 /dev/mapper/luks
+# lvcreate --size 16G vg0 --name swap
+# lvcreate -l +100%FREE vg0 --name root
+# mkfs.ext4 /dev/mapper/cryptroot
+# mount /dev/mapper/cryptroot /mnt
+# mkdir /mnt/boot
+# mkfs.fat -F32 /dev/nvme0n1p1
+# mount /dev/nvme0n1p1 /mnt/boot
+
+# swapon /dev/mapper/vg0-swap
+</code></pre>
+<h2 id="system-setup">System setup</h2>
+<pre><code># pacstrap /mnt base base-devel zsh vim git sudo efibootmgr iw wpa_supplicant dialog
+</code></pre>
+<pre><code># genfstab -pU /mnt &gt;&gt; /mnt/etc/fstab
+</code></pre>
+<p>Edit <code>/mnt/etc/fstab</code>
+* On all non-boot partitions change to noatime (reduces wear if using an SSD)
+* Add the following line tomake <code>/tmp</code> a ramdisk:
+<code>tmpfs  /tmp    tmpfs   defaults,noatime,mode=1777  0   0</code></p>
+<pre><code># arch-chroot /mnt /bin/bash
+</code></pre>
+<pre><code># ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+# hwclock --systohc --utcecho LANG=en_US.UTF-8 &gt;&gt; /etc/locale.conf
+# echo LC_ALL= &gt;&gt; /etc/locale.conf
+# echo MYHOSTNAME &gt; /etc/hostname
+</code></pre>
+<p>Uncomment en-US.UTF-8 in <code>/etc/locale.gen</code> and generate locale</p>
+<pre><code># locale-gen
+# echo LANG=en_US.UTF-8 &gt;&gt; /etc/locale.conf
+# echo LC_ALL= &gt;&gt; /etc/locale.conf
+</code></pre>
+<h2 id="add-user">Add user</h2>
+<pre><code># passwd
+
+# useradd -m -g users -G wheel,storage -s /bin/zsh MYUSERNAME
+# passwd MYUSERNAME
+</code></pre>
+<h2 id="configure-startup">Configure startup</h2>
+<p>Configure mkinitcpio:
+* Add 'encrypt' and 'lvm2' to HOOKS before 'filesystems'
+* Add 'resume' after 'lvm2' (also has to be after 'udev')</p>
+<pre><code># mkinitcpio -p linux
+</code></pre>
+<pre><code># bootctl --path=/boot install
+</code></pre>
+<p>Append following lines to <code>/boot/loader/loader.conf</code>
+* default arch
+* timeout 5</p>
+<p>Create <code>/boot/loader/entries/arch.conf</code> (use blkid to get UUID)</p>
+<pre><code>title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options cryptdevice=UUID=&lt;UUID&gt;:vg0 root=/dev/mapper/vg0-root resume=/dev/mapper/vg0-swap rw acpi_backlight=video
+</code></pre>
+<h2 id="complete-setup-and-reboot">Complete setup and reboot</h2>
+<pre><code># exit
+# umount -R /mnt
+# swapoff -a
+# reboot
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mydocu-1/wiki/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

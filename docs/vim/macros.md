@@ -2,14 +2,14 @@
 
 ### Record
 
-1.  <code>q**a**</code> - record macro in register **a**
+1.  <code>q**a**</code> - record macro in register **a**<br>
 1.  `q` - stop recording
 
 
 ### Play
 
-<code>@**a**</code> - play macro from register **a**
-`@@` - repeat last executed macro
+<code>@**a**</code> - play macro from register **a**<br>
+`@@` - repeat last executed macro<br>
 <code>:normal @**a**</code> - play macro from register **a** on visual selection
 
 
